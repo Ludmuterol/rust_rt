@@ -1,16 +1,19 @@
-use std::time::Duration;
-
 use glium::{Surface, glutin::dpi::PhysicalSize};
 
 extern crate glium;
 
-const SCREEN_SIZE: PhysicalSize<u32> = PhysicalSize{ height: 512 , width: 512 };
+const WIDTH: u32 = 512;
+const HEIGHT: u32 = 512;
+
+mod event_handler;
+mod renderer;
+mod parser;
 
 fn main() {
     use glium::glutin;
 
     let event_loop = glutin::event_loop::EventLoop::new();
-    let wb = glutin::window::WindowBuilder::new().with_inner_size(SCREEN_SIZE);
+    let wb = glutin::window::WindowBuilder::new().with_inner_size(PhysicalSize{width: WIDTH, height: HEIGHT});
     let cb = glutin::ContextBuilder::new();
     let display = glium::Display::new(wb, cb, &event_loop).unwrap(); 
     
@@ -20,21 +23,11 @@ fn main() {
             std::time::Duration::from_nanos(1_000_000_000 / 60);
         *control_flow = glutin::event_loop::ControlFlow::WaitUntil(next_frame_time);
         match ev {
-            glutin::event::Event::WindowEvent { event, .. } => match event {
-                glutin::event::WindowEvent::CloseRequested => control_flow.set_exit(),
-                glutin::event::WindowEvent::KeyboardInput { input, .. } => match input.state {
-                    glutin::event::ElementState::Pressed => match input.virtual_keycode {
-                        Some(glutin::event::VirtualKeyCode::Escape) => control_flow.set_exit(),
-                        _ => (),
-                    },
-                    _ => (),
-                },
-                _ => (),
-            },
+            glutin::event::Event::WindowEvent { event, .. } => event_handler::handle_window_event(event, control_flow),
             glutin::event::Event::MainEventsCleared => {
                 let target = display.draw();
-                let mut pixels = vec![0u8; (SCREEN_SIZE.width * SCREEN_SIZE.height * 3).try_into().unwrap()];
-                let converted_pixels = glium::texture::RawImage2d::from_raw_rgb(pixels, SCREEN_SIZE.into());
+                let pixels = renderer::render(WIDTH, HEIGHT);
+                let converted_pixels = glium::texture::RawImage2d::from_raw_rgb(pixels, (WIDTH, HEIGHT));
                 glium::Texture2d::new(&display, converted_pixels)
                     .unwrap()
                     .as_surface()
