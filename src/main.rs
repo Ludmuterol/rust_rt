@@ -8,6 +8,7 @@ const HEIGHT: u32 = 512;
 mod event_handler;
 mod renderer;
 mod parser;
+mod vec3;
 
 fn main() {
     use glium::glutin;
@@ -16,7 +17,7 @@ fn main() {
     let wb = glutin::window::WindowBuilder::new().with_inner_size(PhysicalSize{width: WIDTH, height: HEIGHT});
     let cb = glutin::ContextBuilder::new();
     let display = glium::Display::new(wb, cb, &event_loop).unwrap(); 
-    
+    parser::parse();
     event_loop.run(move |ev, _, control_flow| {
         
         let next_frame_time = std::time::Instant::now() + 
