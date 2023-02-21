@@ -21,7 +21,7 @@ pub fn render (width: u32, height: u32, scene: &Scene) -> Vec<u8>{
                     _ => ()
                 }
             }
-            let mut intensity = 0.0;
+            let mut intensity = scene.ambientlight.intensity;
             for l in &scene.pointlights {
                 let mut factor = 0.0;
                 let i_to_l = l.pos - closest_intersect.pos;

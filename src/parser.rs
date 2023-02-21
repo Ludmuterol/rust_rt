@@ -2,10 +2,11 @@ use std::fs::File;
 use std::io::prelude::*;
 
 use serde::{Deserialize, Serialize};
-use crate::objects::{Sphere, PointLight};
+use crate::objects::{Sphere, PointLight, AmbientLight};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Scene {
+    pub ambientlight: AmbientLight,
     pub spheres: Vec<Sphere>,
     pub pointlights: Vec<PointLight>,
 }

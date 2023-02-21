@@ -15,6 +15,11 @@ pub struct PointLight {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct AmbientLight {
+    pub intensity: f64,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Color {
     pub r: u8,
     pub g: u8,
@@ -44,30 +49,43 @@ impl Sphere {
         let b:f64 = 2.0 * ray.dir.dot(ray.pos - self.pos);
         let c:f64 = (ray.pos - self.pos).dot(ray.pos - self.pos) - self.radius * self.radius;
         let roots = solve_quadratic::solve_quadratic(a, b, c);
+        let mut inter:Intersection = Intersection { pos: ray.pos, dist_from_ray_origin: f64::MAX, norm: ray.pos, obj_color: self.color, specular: self.specular};
+        inter.obj_color = self.color;
+        inter.specular = self.specular;
         match roots {
             (Some(x), Some(y)) => {
                 if x > 0.0 && y > 0.0 {
                     if x <= y {
-                        let pos = ray.pos + ray.dir * x;
-                        return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * x, norm: (pos - self.pos).normalize(), obj_color: self.color, specular: self.specular})
+                        inter.pos = ray.pos + ray.dir * x;
+                        inter.dist_from_ray_origin = ray.dir.len() * x;
+                        inter.norm = (inter.pos - self.pos).normalize();
+                        return Some(inter)
                     }
-                    let pos = ray.pos + ray.dir * y;
-                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * y, norm: (pos - self.pos).normalize(), obj_color: self.color, specular: self.specular })
+                    inter.pos = ray.pos + ray.dir * y;
+                    inter.dist_from_ray_origin = ray.dir.len() * y;
+                    inter.norm = (inter.pos - self.pos).normalize();
+                    return Some(inter)
                 }
                 if x > 0.0 {
-                    let pos = ray.pos + ray.dir * x;
-                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * x, norm: (pos - self.pos).normalize(), obj_color: self.color, specular: self.specular })
+                    inter.pos = ray.pos + ray.dir * x;
+                    inter.dist_from_ray_origin = ray.dir.len() * x;
+                    inter.norm = (inter.pos - self.pos).normalize();
+                    return Some(inter)
                 }
                 if y > 0.0 {
-                    let pos = ray.pos + ray.dir * y;
-                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * y, norm: (pos - self.pos).normalize(), obj_color: self.color, specular: self.specular})
+                    inter.pos = ray.pos + ray.dir * y;
+                    inter.dist_from_ray_origin = ray.dir.len() * y;
+                    inter.norm = (inter.pos - self.pos).normalize();
+                    return Some(inter)
                 }
                 None
             },
             (Some(x), None) => {
                 if x > 0.0 {
-                    let pos = ray.pos + ray.dir * x;
-                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * x, norm: (pos - self.pos).normalize(), obj_color: self.color, specular: self.specular })
+                    inter.pos = ray.pos + ray.dir * x;
+                    inter.dist_from_ray_origin = ray.dir.len() * x;
+                    inter.norm = (inter.pos - self.pos).normalize();
+                    return Some(inter)
                 }
                 None
             },
