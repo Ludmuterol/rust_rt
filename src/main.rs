@@ -9,6 +9,8 @@ mod event_handler;
 mod renderer;
 mod parser;
 mod vec3;
+mod objects;
+mod solve_quadratic;
 
 fn main() {
     use glium::glutin;
