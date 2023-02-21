@@ -6,6 +6,7 @@ use crate::objects::{Sphere, PointLight, AmbientLight};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Scene {
+    pub mirror_rec_depth: u32,
     pub ambientlight: AmbientLight,
     pub spheres: Vec<Sphere>,
     pub pointlights: Vec<PointLight>,

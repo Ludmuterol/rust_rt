@@ -1,4 +1,5 @@
 {
+	"mirror_rec_depth": 100,
 	"ambientlight": {
 		"intensity": 0.2
 	},
@@ -15,7 +16,8 @@
 				"g": 0,
 				"b": 0
 			},
-			"specular": 500
+			"specular": 500,
+			"reflective": 0.2
 		},
 		{
 			"pos": {
@@ -29,7 +31,9 @@
 				"g": 0,
 				"b": 255
 			},
-			"specular": 500
+			"specular": 500,
+			"reflective": 0.3
+
 		},
 		{
 			"pos": {
@@ -43,7 +47,9 @@
 				"g": 255,
 				"b": 0
 			},
-			"specular": 10
+			"specular": 10,
+			"reflective": 0.4
+
 		},
 		{
 			"pos": {
@@ -57,7 +63,9 @@
 				"g": 255,
 				"b": 0
 			},
-			"specular": 1000
+			"specular": 1000,
+			"reflective": 0.5
+
 		}
         ],
 	"pointlights": [
