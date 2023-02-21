@@ -4,20 +4,30 @@ use crate::solve_quadratic;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Ray {
-    pos: Vec3,
-    dir: Vec3,
+    pub pos: Vec3,
+    pub dir: Vec3,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct Color {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Sphere {
-    pos: Vec3,
-    radius: f64,
+    pub pos: Vec3,
+    pub radius: f64,
+    pub color: Color,
 }
 
+#[derive(Debug, Clone, Copy)]
 pub struct Intersection {
-    pos: Vec3,
-    dist_from_ray_origin: f64,
-    norm: Vec3,
+    pub pos: Vec3,
+    pub dist_from_ray_origin: f64,
+    pub norm: Vec3,
+    pub obj_color: Color,
 }
 
 impl Sphere {
@@ -31,25 +41,25 @@ impl Sphere {
                 if x > 0.0 && y > 0.0 {
                     if x <= y {
                         let pos = ray.pos + ray.dir * x;
-                        return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * x, norm: (pos - self.pos).normalize() })
+                        return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * x, norm: (pos - self.pos).normalize(), obj_color: self.color})
                     }
                     let pos = ray.pos + ray.dir * y;
-                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * y, norm: (pos - self.pos).normalize() })
+                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * y, norm: (pos - self.pos).normalize(), obj_color: self.color })
                 }
                 if x > 0.0 {
                     let pos = ray.pos + ray.dir * x;
-                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * x, norm: (pos - self.pos).normalize() })
+                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * x, norm: (pos - self.pos).normalize(), obj_color: self.color })
                 }
                 if y > 0.0 {
                     let pos = ray.pos + ray.dir * y;
-                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * y, norm: (pos - self.pos).normalize() })
+                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * y, norm: (pos - self.pos).normalize(), obj_color: self.color})
                 }
                 None
             },
             (Some(x), None) => {
                 if x > 0.0 {
                     let pos = ray.pos + ray.dir * x;
-                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * x, norm: (pos - self.pos).normalize() })
+                    return Some(Intersection { pos: pos, dist_from_ray_origin: ray.dir.len() * x, norm: (pos - self.pos).normalize(), obj_color: self.color })
                 }
                 None
             },

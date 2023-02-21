@@ -19,7 +19,7 @@ fn main() {
     let wb = glutin::window::WindowBuilder::new().with_inner_size(PhysicalSize{width: WIDTH, height: HEIGHT});
     let cb = glutin::ContextBuilder::new();
     let display = glium::Display::new(wb, cb, &event_loop).unwrap(); 
-    parser::parse();
+    let scene = parser::parse();
     event_loop.run(move |ev, _, control_flow| {
         
         let next_frame_time = std::time::Instant::now() + 
@@ -29,7 +29,7 @@ fn main() {
             glutin::event::Event::WindowEvent { event, .. } => event_handler::handle_window_event(event, control_flow),
             glutin::event::Event::MainEventsCleared => {
                 let target = display.draw();
-                let pixels = renderer::render(WIDTH, HEIGHT);
+                let pixels = renderer::render(WIDTH, HEIGHT, &scene);
                 let converted_pixels = glium::texture::RawImage2d::from_raw_rgb(pixels, (WIDTH, HEIGHT));
                 glium::Texture2d::new(&display, converted_pixels)
                     .unwrap()
