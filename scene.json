@@ -1,5 +1,8 @@
 {
 	"mirror_rec_depth": 100,
+	"samples_per_pixel": 10,
+	"width": 1280,
+	"height": 720,
 	"camera": {
 		"pos": {
 			"x": 0.0,
@@ -16,7 +19,7 @@
 			"y": 1.0,
 			"z": 0.0
 		},
-		"hfov": 53
+		"hfov": 70
 	},
 	"ambientlight": {
 		"intensity": 0.2

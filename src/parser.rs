@@ -2,11 +2,15 @@ use std::fs::File;
 use std::io::prelude::*;
 
 use serde::{Deserialize, Serialize};
-use crate::objects::{Sphere, PointLight, AmbientLight, Camera};
+use crate::objects::{Sphere, PointLight, AmbientLight};
+use crate::camera::Camera;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Scene {
     pub mirror_rec_depth: u32,
+    pub samples_per_pixel: u32,
+    pub width: u32,
+    pub height: u32,
     pub camera: Camera,
     pub ambientlight: AmbientLight,
     pub spheres: Vec<Sphere>,
