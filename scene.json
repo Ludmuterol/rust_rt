@@ -1,5 +1,23 @@
 {
 	"mirror_rec_depth": 100,
+	"camera": {
+		"pos": {
+			"x": 0.0,
+			"y": 0.0,
+			"z": 0.0
+		},
+		"dir": {
+			"x": 0.0,
+			"y": 0.0,
+			"z": 1.0
+		},
+		"up": {
+			"x": 0.0,
+			"y": 1.0,
+			"z": 0.0
+		},
+		"hfov": 53
+	},
 	"ambientlight": {
 		"intensity": 0.2
 	},
@@ -32,7 +50,7 @@
 				"b": 255
 			},
 			"specular": 500,
-			"reflective": 0.3
+			"reflective": 0.9
 
 		},
 		{

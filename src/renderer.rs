@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::objects::{Ray, Intersection, Color};
 use crate::parser::Scene;
 use crate::vec3::Vec3;
@@ -79,11 +81,21 @@ fn cast_ray (scene: &Scene, ray: Ray, limit: u32) -> Color{
 
 pub fn render (width: u32, height: u32, scene: &Scene) -> Vec<u8>{
     let mut vec = vec![0u8; (width * height * 3).try_into().unwrap()];
+    let angle_rad = scene.camera.hfov * PI / 180.0;
+    let viewport_width = (angle_rad / 2.0).tan() * 2.0;
+    let viewport_height = (viewport_width / width as f64) * height as f64;
+    let w = scene.camera.dir * -1.0;
+    let u = scene.camera.up.cross(w).normalize();
+    let v = w.cross(u).normalize();
+    let origin = scene.camera.pos;
+    let horizontal = u * viewport_width * -1.0;
+    let vertical = v * viewport_height;
+    let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - w;
 
-    let pos = Vec3 {x: 0.0, y: 0.0, z: 0.0};
     for i in 0..height {
         for j in 0..width {
-            let r = Ray {pos: pos, dir: Vec3 { x: j as f64 / width as f64 - 0.5, y: i as f64 / height as f64 - 0.5, z: 1.0 }.normalize()};
+            
+            let r = Ray {pos: origin, dir: (lower_left_corner + vertical * (i as f64 / height as f64) + horizontal * (j as f64 / width as f64) - origin).normalize()};
             let offset:usize = j as usize * 3 + i as usize * width as usize * 3;
             let color = cast_ray(scene, r, scene.mirror_rec_depth);
             vec[offset + 0] = color.r;

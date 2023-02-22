@@ -9,6 +9,14 @@ pub struct Ray {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct Camera {
+    pub pos: Vec3,
+    pub dir: Vec3,
+    pub up: Vec3,
+    pub hfov: f64,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct PointLight {
     pub pos: Vec3,
     pub intensity: f64,
