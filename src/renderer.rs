@@ -1,6 +1,7 @@
 use crate::objects::{Ray, Intersection, Color};
 use crate::parser::Scene;
 use rand::prelude::*;
+use rayon::prelude::*;
 
 fn calc_light (inter: Intersection, scene: &Scene, ray: Ray, limit: u32) -> Color {
     let mut intensity = scene.ambientlight.intensity;
@@ -79,13 +80,10 @@ fn cast_ray (scene: &Scene, ray: Ray, limit: u32) -> Color{
 
 pub fn render (scene: &Scene) -> Vec<u8>{
     let mut vec = vec![0u8; (scene.width * scene.height * 3).try_into().unwrap()];
-    let mut rng = thread_rng();
-    for i in 0..scene.height {
-        if i % (scene.height / 10) == 0 {
-            println!("done with {} of {}", i, scene.height);
-        }
-        for j in 0..scene.width { 
-            let offset:usize = j as usize * 3 + i as usize * scene.width as usize * 3;
+    let bands: Vec<(usize, &mut [u8])> = vec.chunks_mut(scene.width as usize * 3).enumerate().collect();
+    bands.into_par_iter().for_each(|(i, band)| {
+        let mut rng = thread_rng();
+        for (j, col) in band.chunks_mut(3).enumerate() {
             let mut r: u32 = 0;
             let mut g: u32 = 0;
             let mut b: u32 = 0;
@@ -102,10 +100,10 @@ pub fn render (scene: &Scene) -> Vec<u8>{
                 g += tmp_col.g as u32;
                 b += tmp_col.b as u32;
             }
-            vec[offset + 0] = (r / scene.samples_per_pixel) as u8;
-            vec[offset + 1] = (g / scene.samples_per_pixel) as u8;
-            vec[offset + 2] = (b / scene.samples_per_pixel) as u8;
+            col[0] = (r / scene.samples_per_pixel) as u8;
+            col[1] = (g / scene.samples_per_pixel) as u8;
+            col[2] = (b / scene.samples_per_pixel) as u8;
         }
-    }
+    });
     vec
 }

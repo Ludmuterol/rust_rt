@@ -78,4 +78,19 @@ impl Vec3 {
     pub fn dist(self, other: Vec3) -> f64 {
         (self - other).len()
     }
+    pub fn random_in_unit_sphere(self) -> Vec3 {
+        let mut v = Vec3 {
+            x: rand::random(),
+            y: rand::random(),
+            z: rand::random()
+        };
+        while v.len() >= 1.0 {
+            v = Vec3 {
+                x: rand::random(),
+                y: rand::random(),
+                z: rand::random()
+            };
+        }
+        v
+    }
 }

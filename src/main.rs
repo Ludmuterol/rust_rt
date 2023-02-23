@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use glium::{Surface, glutin::dpi::PhysicalSize};
 
 extern crate glium;
@@ -19,7 +21,10 @@ fn main() {
     let cb = glutin::ContextBuilder::new();
     let display = glium::Display::new(wb, cb, &event_loop).unwrap(); 
     let target = display.draw();
+    let now = Instant::now();
     let pixels = renderer::render(&scene);
+    let elapsed = now.elapsed();
+    println!("Running render() took {} seconds.", elapsed.as_secs_f32());
     let converted_pixels = glium::texture::RawImage2d::from_raw_rgb(pixels, (scene.width, scene.height));
     glium::Texture2d::new(&display, converted_pixels)
         .unwrap()
