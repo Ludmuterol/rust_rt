@@ -1,5 +1,6 @@
 use crate::objects::{Ray, Intersection, Color};
 use crate::parser::Scene;
+use crate::vec3::random_in_unit_sphere;
 use rand::prelude::*;
 use rayon::prelude::*;
 
@@ -39,11 +40,19 @@ fn calc_light (inter: Intersection, scene: &Scene, ray: Ray, limit: u32) -> Colo
         return local_color;
     }
     let reflected_ray_dir = inter.norm * 2.0 * inter.norm.dot(ray.dir * -1.0) - (ray.dir * -1.0);
-    let reflected_ray = Ray {pos: inter.pos + reflected_ray_dir * 0.001, dir: reflected_ray_dir};
-    let reflected_color = cast_ray(scene, reflected_ray, limit - 1);
-    let r2 = (local_color.r as f64 * (1.0 - inter.reflective) + reflected_color.r as f64 * inter.reflective) as u8;
-    let g2 = (local_color.g as f64 * (1.0 - inter.reflective) + reflected_color.g as f64 * inter.reflective) as u8;
-    let b2 = (local_color.b as f64 * (1.0 - inter.reflective) + reflected_color.b as f64 * inter.reflective) as u8;
+    let mut r2:u32 = 0;
+    let mut g2:u32 = 0;
+    let mut b2:u32 = 0;
+    for _ in 0..scene.samples_per_pixel {
+        let reflected_ray = Ray {pos: inter.pos + reflected_ray_dir * 0.001, dir: (reflected_ray_dir * 1.2 + random_in_unit_sphere() * 0.2).normalize()};
+        let reflected_color = cast_ray(scene, reflected_ray, limit - 1);
+        r2 += reflected_color.r as u32;
+        g2 += reflected_color.g as u32;
+        b2 += reflected_color.b as u32;
+    }
+    let r2 = (local_color.r as f64 * (1.0 - inter.reflective) + (r2 as f64 / scene.samples_per_pixel as f64) * inter.reflective) as u8;
+    let g2 = (local_color.g as f64 * (1.0 - inter.reflective) + (g2 as f64 / scene.samples_per_pixel as f64) * inter.reflective) as u8;
+    let b2 = (local_color.b as f64 * (1.0 - inter.reflective) + (b2 as f64 / scene.samples_per_pixel as f64) * inter.reflective) as u8;
     return Color { r: r2, g: g2, b: b2 };
 }
 

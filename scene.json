@@ -1,6 +1,6 @@
 {
-	"mirror_rec_depth": 100,
-	"samples_per_pixel": 10,
+	"mirror_rec_depth": 2,
+	"samples_per_pixel": 100,
 	"width": 1280,
 	"height": 720,
 	"camera": {
@@ -38,7 +38,7 @@
 				"b": 0
 			},
 			"specular": 500,
-			"reflective": 0.2
+			"reflective": 0.0
 		},
 		{
 			"pos": {
@@ -52,8 +52,8 @@
 				"g": 0,
 				"b": 255
 			},
-			"specular": 500,
-			"reflective": 0.9
+			"specular": -1,
+			"reflective": 1.0
 
 		},
 		{
@@ -68,8 +68,8 @@
 				"g": 255,
 				"b": 0
 			},
-			"specular": 10,
-			"reflective": 0.4
+			"specular": -1,
+			"reflective": 1.0
 
 		},
 		{
@@ -84,8 +84,8 @@
 				"g": 255,
 				"b": 0
 			},
-			"specular": 1000,
-			"reflective": 0.5
+			"specular": -1,
+			"reflective": 0.0
 
 		}
         ],
