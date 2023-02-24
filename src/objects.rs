@@ -32,7 +32,8 @@ pub struct Sphere {
     pub radius: f64,
     pub color: Color,
     pub specular: i32,
-    pub reflective: f64,
+    pub reflective: bool,
+    pub lambertian: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -42,7 +43,8 @@ pub struct Intersection {
     pub norm: Vec3,
     pub obj_color: Color,
     pub specular: i32,
-    pub reflective: f64,
+    pub reflective: bool,
+    pub lambertian: bool,
 }
 
 impl Sphere {
@@ -51,7 +53,15 @@ impl Sphere {
         let b:f64 = 2.0 * ray.dir.dot(ray.pos - self.pos);
         let c:f64 = (ray.pos - self.pos).dot(ray.pos - self.pos) - self.radius * self.radius;
         let roots = solve_quadratic::solve_quadratic(a, b, c);
-        let mut inter:Intersection = Intersection { pos: ray.pos, dist_from_ray_origin: f64::MAX, norm: ray.pos, obj_color: self.color, specular: self.specular, reflective: self.reflective};
+        let mut inter:Intersection = Intersection {
+            pos: ray.pos, 
+            dist_from_ray_origin: f64::MAX, 
+            norm: ray.pos, 
+            obj_color: self.color, 
+            specular: self.specular, 
+            reflective: self.reflective, 
+            lambertian: self.lambertian
+        };
         match roots {
             (Some(x), Some(y)) => {
                 if x > 0.0 && y > 0.0 {

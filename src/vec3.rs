@@ -77,7 +77,11 @@ impl Vec3 {
     }
     pub fn dist(self, other: Vec3) -> f64 {
         (self - other).len()
-    } 
+    }
+    pub fn near_zero(self) -> bool {
+        let s = 1e-8;
+        return self.x.abs() < s && self.y.abs() < s && self.z.abs() < s;
+    }
 }
 pub fn random_in_unit_sphere() -> Vec3 {
     let mut v = Vec3 {
