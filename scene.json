@@ -39,7 +39,8 @@
 			},
 			"specular": 10,
 			"reflective": false,
-			"lambertian": true
+			"lambertian": true,
+			"dielectric": false
 		},
 		{
 			"pos": {
@@ -54,9 +55,9 @@
 				"b": 204
 			},
 			"specular": -1,
-			"reflective": true,
-			"lambertian": false
-
+			"reflective": false,
+			"lambertian": false,
+			"dielectric": true
 		},
 		{
 			"pos": {
@@ -72,7 +73,8 @@
 			},
 			"specular": -1,
 			"reflective": true,
-			"lambertian": false
+			"lambertian": false,
+			"dielectric": false
 
 		},
 		{
@@ -89,7 +91,8 @@
 			},
 			"specular": -1,
 			"reflective": false,
-			"lambertian": true
+			"lambertian": true,
+			"dielectric": false
 
 		}
         ],

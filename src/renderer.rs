@@ -41,24 +41,45 @@ fn calc_light (inter: Intersection, scene: &Scene, ray: Ray, limit: u32) -> Colo
         if scatter_direction.near_zero() {
             scatter_direction = inter.norm;
         }
-        let reflected_ray = Ray {
+        let scattered_ray = Ray {
             pos: inter.pos + scatter_direction * 0.001, 
             dir: scatter_direction};
-        let reflected_color = cast_ray(scene, reflected_ray, limit - 1);
-        let r3 = (inter.obj_color.r as f64 * ((reflected_color.r as f64) / 255.0)) as u8;
-        let g3 = (inter.obj_color.g as f64 * ((reflected_color.g as f64) / 255.0)) as u8;
-        let b3 = (inter.obj_color.b as f64 * ((reflected_color.b as f64) / 255.0)) as u8;
+        let scattered_color = cast_ray(scene, scattered_ray, limit - 1);
+        let r3 = (inter.obj_color.r as f64 * ((scattered_color.r as f64) / 255.0)) as u8;
+        let g3 = (inter.obj_color.g as f64 * ((scattered_color.g as f64) / 255.0)) as u8;
+        let b3 = (inter.obj_color.b as f64 * ((scattered_color.b as f64) / 255.0)) as u8;
         return Color { r: r3, g: g3, b: b3 };
 
     }
     if inter.reflective {
         let reflected_ray_dir = inter.norm * 2.0 * inter.norm.dot(ray.dir * -1.0) - (ray.dir * -1.0);
-        let reflected_ray = Ray {pos: inter.pos + reflected_ray_dir * 0.001, dir: reflected_ray_dir};
+        let reflected_ray = Ray {
+            pos: inter.pos + reflected_ray_dir * 0.001,
+            dir: reflected_ray_dir
+        };
         let reflected_color = cast_ray(scene, reflected_ray, limit - 1);
         let r3 = (inter.obj_color.r as f64 * ((reflected_color.r as f64 / 255.0))) as u8;
         let g3 = (inter.obj_color.g as f64 * ((reflected_color.g as f64 / 255.0))) as u8;
         let b3 = (inter.obj_color.b as f64 * ((reflected_color.b as f64 / 255.0))) as u8;
         return Color { r: r3, g: g3, b: b3 };
+    }
+    if inter.dielectric {
+        let mut refract_ratio = 1.5;
+        let mut norm = inter.norm * -1.0;
+        if inter.front_intersection {
+            refract_ratio = 1.0 / refract_ratio;
+            norm = inter.norm;
+        }
+        let cos_theta = (ray.dir * -1.0).dot(norm).min(1.0);
+        let refracted_ray_perp = (ray.dir + norm * cos_theta) * refract_ratio;
+        let refracted_ray_parallel = norm * -(1.0 - refracted_ray_perp.len().powi(2)).abs().sqrt();
+        let refracted_ray_dir = refracted_ray_perp + refracted_ray_parallel;
+        let refracted_ray = Ray {
+            pos: inter.pos + refracted_ray_dir * 0.001,
+            dir: refracted_ray_dir
+        };
+        let refracted_color = cast_ray(scene, refracted_ray, limit - 1);
+        return refracted_color;
     }
     return inter.obj_color;
 }
@@ -71,7 +92,9 @@ fn ray_intersect (scene: &Scene, ray: Ray) -> Option<Intersection>{
         obj_color: Color { r: 0, g: 0, b: 0 }, 
         specular: -1, 
         reflective: false,
-        lambertian: false
+        lambertian: false,
+        dielectric: false,
+        front_intersection: false,
     };
     for sp in &scene.spheres {
         let i = sp.intersect(ray);

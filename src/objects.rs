@@ -34,6 +34,7 @@ pub struct Sphere {
     pub specular: i32,
     pub reflective: bool,
     pub lambertian: bool,
+    pub dielectric: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -45,6 +46,8 @@ pub struct Intersection {
     pub specular: i32,
     pub reflective: bool,
     pub lambertian: bool,
+    pub dielectric: bool,
+    pub front_intersection: bool,
 }
 
 impl Sphere {
@@ -60,7 +63,9 @@ impl Sphere {
             obj_color: self.color, 
             specular: self.specular, 
             reflective: self.reflective, 
-            lambertian: self.lambertian
+            lambertian: self.lambertian,
+            dielectric: self.dielectric,
+            front_intersection: true,
         };
         match roots {
             (Some(x), Some(y)) => {
@@ -77,12 +82,14 @@ impl Sphere {
                     return Some(inter)
                 }
                 if x > 0.0 {
+                    inter.front_intersection = false;
                     inter.pos = ray.pos + ray.dir * x;
                     inter.dist_from_ray_origin = ray.dir.len() * x;
                     inter.norm = (inter.pos - self.pos).normalize();
                     return Some(inter)
                 }
                 if y > 0.0 {
+                    inter.front_intersection = false;
                     inter.pos = ray.pos + ray.dir * y;
                     inter.dist_from_ray_origin = ray.dir.len() * y;
                     inter.norm = (inter.pos - self.pos).normalize();
