@@ -1,6 +1,6 @@
 {
 	"mirror_rec_depth": 20,
-	"samples_per_pixel": 10,
+	"samples_per_pixel": 1000,
 	"width": 1280,
 	"height": 720,
 	"camera": {
@@ -40,7 +40,8 @@
 			"specular": 10,
 			"reflective": false,
 			"lambertian": true,
-			"dielectric": false
+			"dielectric": false,
+			"refract_factor": 1.0
 		},
 		{
 			"pos": {
@@ -57,7 +58,26 @@
 			"specular": -1,
 			"reflective": false,
 			"lambertian": false,
-			"dielectric": true
+			"dielectric": true,
+			"refract_factor": 2.5
+		},
+		{
+			"pos": {
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.0
+			},
+			"radius": -0.4,
+			"color": {
+				"r": 20,
+				"g": 20,
+				"b": 20
+			},
+			"specular": -1,
+			"reflective": false,
+			"lambertian": false,
+			"dielectric": true,
+			"refract_factor": 2.5
 		},
 		{
 			"pos": {
@@ -74,7 +94,8 @@
 			"specular": -1,
 			"reflective": true,
 			"lambertian": false,
-			"dielectric": false
+			"dielectric": false,
+			"refract_factor": 1.0
 
 		},
 		{
@@ -92,7 +113,8 @@
 			"specular": -1,
 			"reflective": false,
 			"lambertian": true,
-			"dielectric": false
+			"dielectric": false,
+			"refract_factor": 1.0
 
 		}
         ],

@@ -36,11 +36,7 @@ fn calc_light (inter: Intersection, scene: &Scene, ray: Ray, limit: u32) -> Colo
         return inter.obj_color;
     }
     if inter.lambertian {
-        let mut scatter_direction = inter.norm;
-        scatter_direction = (scatter_direction + random_in_unit_sphere().normalize()).normalize();
-        if scatter_direction.near_zero() {
-            scatter_direction = inter.norm;
-        }
+        let scatter_direction = inter.norm.scatter();
         let scattered_ray = Ray {
             pos: inter.pos + scatter_direction * 0.001, 
             dir: scatter_direction};
@@ -52,7 +48,7 @@ fn calc_light (inter: Intersection, scene: &Scene, ray: Ray, limit: u32) -> Colo
 
     }
     if inter.reflective {
-        let reflected_ray_dir = inter.norm * 2.0 * inter.norm.dot(ray.dir * -1.0) - (ray.dir * -1.0);
+        let reflected_ray_dir = ray.dir.reflect(inter.norm);
         let reflected_ray = Ray {
             pos: inter.pos + reflected_ray_dir * 0.001,
             dir: reflected_ray_dir
@@ -64,16 +60,20 @@ fn calc_light (inter: Intersection, scene: &Scene, ray: Ray, limit: u32) -> Colo
         return Color { r: r3, g: g3, b: b3 };
     }
     if inter.dielectric {
-        let mut refract_ratio = 1.5;
+        let mut refract_ratio = inter.refract_factor;
         let mut norm = inter.norm * -1.0;
         if inter.front_intersection {
             refract_ratio = 1.0 / refract_ratio;
             norm = inter.norm;
         }
         let cos_theta = (ray.dir * -1.0).dot(norm).min(1.0);
+        let sin_theta = (1.0 - cos_theta.powi(2)).sqrt();
         let refracted_ray_perp = (ray.dir + norm * cos_theta) * refract_ratio;
-        let refracted_ray_parallel = norm * -(1.0 - refracted_ray_perp.len().powi(2)).abs().sqrt();
-        let refracted_ray_dir = refracted_ray_perp + refracted_ray_parallel;
+        let refracted_ray_parallel = norm * -((1.0 - refracted_ray_perp.len().powi(2)).abs().sqrt());
+        let mut refracted_ray_dir = refracted_ray_perp + refracted_ray_parallel;
+        if refract_ratio * sin_theta > 1.0 || reflectance(cos_theta, refract_ratio) > random::<f64>() {
+            refracted_ray_dir = ray.dir.reflect(norm);
+        }
         let refracted_ray = Ray {
             pos: inter.pos + refracted_ray_dir * 0.001,
             dir: refracted_ray_dir
@@ -82,6 +82,11 @@ fn calc_light (inter: Intersection, scene: &Scene, ray: Ray, limit: u32) -> Colo
         return refracted_color;
     }
     return inter.obj_color;
+}
+
+fn reflectance (cos_theta: f64, refract_ratio: f64) -> f64 {
+    let r0 = ((1.0 - refract_ratio) / (1.0 + refract_ratio)).powi(2);
+    r0 + (1.0 - r0) * (1.0 - cos_theta).powi(5)
 }
 
 fn ray_intersect (scene: &Scene, ray: Ray) -> Option<Intersection>{
@@ -95,6 +100,7 @@ fn ray_intersect (scene: &Scene, ray: Ray) -> Option<Intersection>{
         lambertian: false,
         dielectric: false,
         front_intersection: false,
+        refract_factor: 1.0,
     };
     for sp in &scene.spheres {
         let i = sp.intersect(ray);

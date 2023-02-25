@@ -35,6 +35,7 @@ pub struct Sphere {
     pub reflective: bool,
     pub lambertian: bool,
     pub dielectric: bool,
+    pub refract_factor: f64,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -48,13 +49,14 @@ pub struct Intersection {
     pub lambertian: bool,
     pub dielectric: bool,
     pub front_intersection: bool,
+    pub refract_factor: f64,
 }
 
 impl Sphere {
     pub fn intersect(self, ray: Ray) -> Option<Intersection> {
         let a:f64 = ray.dir.dot(ray.dir);
         let b:f64 = 2.0 * ray.dir.dot(ray.pos - self.pos);
-        let c:f64 = (ray.pos - self.pos).dot(ray.pos - self.pos) - self.radius * self.radius;
+        let c:f64 = (ray.pos - self.pos).dot(ray.pos - self.pos) - self.radius.powi(2);
         let roots = solve_quadratic::solve_quadratic(a, b, c);
         let mut inter:Intersection = Intersection {
             pos: ray.pos, 
@@ -66,33 +68,37 @@ impl Sphere {
             lambertian: self.lambertian,
             dielectric: self.dielectric,
             front_intersection: true,
+            refract_factor: self.refract_factor,
         };
         match roots {
             (Some(x), Some(y)) => {
+
                 if x > 0.0 && y > 0.0 {
                     if x <= y {
                         inter.pos = ray.pos + ray.dir * x;
                         inter.dist_from_ray_origin = ray.dir.len() * x;
-                        inter.norm = (inter.pos - self.pos).normalize();
+                        inter.norm = (inter.pos - self.pos) / self.radius;
+                        inter.front_intersection = ray.dir.dot(inter.norm) < 0.0;
                         return Some(inter)
                     }
                     inter.pos = ray.pos + ray.dir * y;
                     inter.dist_from_ray_origin = ray.dir.len() * y;
-                    inter.norm = (inter.pos - self.pos).normalize();
+                    inter.norm = (inter.pos - self.pos) / self.radius;
+                    inter.front_intersection = ray.dir.dot(inter.norm) < 0.0;
                     return Some(inter)
                 }
                 if x > 0.0 {
-                    inter.front_intersection = false;
                     inter.pos = ray.pos + ray.dir * x;
                     inter.dist_from_ray_origin = ray.dir.len() * x;
-                    inter.norm = (inter.pos - self.pos).normalize();
+                    inter.norm = (inter.pos - self.pos) / self.radius;
+                    inter.front_intersection = ray.dir.dot(inter.norm) < 0.0;
                     return Some(inter)
                 }
                 if y > 0.0 {
-                    inter.front_intersection = false;
                     inter.pos = ray.pos + ray.dir * y;
                     inter.dist_from_ray_origin = ray.dir.len() * y;
-                    inter.norm = (inter.pos - self.pos).normalize();
+                    inter.norm = (inter.pos - self.pos) / self.radius;
+                    inter.front_intersection = ray.dir.dot(inter.norm) < 0.0;
                     return Some(inter)
                 }
                 None
@@ -101,7 +107,8 @@ impl Sphere {
                 if x > 0.0 {
                     inter.pos = ray.pos + ray.dir * x;
                     inter.dist_from_ray_origin = ray.dir.len() * x;
-                    inter.norm = (inter.pos - self.pos).normalize();
+                    inter.norm = (inter.pos - self.pos) / self.radius;
+                    inter.front_intersection = ray.dir.dot(inter.norm) < 0.0;
                     return Some(inter)
                 }
                 None

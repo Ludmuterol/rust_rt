@@ -82,6 +82,16 @@ impl Vec3 {
         let s = 1e-8;
         return self.x.abs() < s && self.y.abs() < s && self.z.abs() < s;
     }
+    pub fn reflect(self, norm: Vec3) -> Vec3 {
+        norm * 2.0 * norm.dot(self * -1.0) - (self * -1.0)
+    }
+    pub fn scatter(self) -> Vec3 {
+        let s = (self + random_in_unit_sphere().normalize()).normalize();
+        if s.near_zero() {
+            return self;
+        }
+        s
+    }
 }
 pub fn random_in_unit_sphere() -> Vec3 {
     let mut v = Vec3 {
