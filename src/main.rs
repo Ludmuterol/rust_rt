@@ -11,6 +11,7 @@ mod vec3;
 mod objects;
 mod solve_quadratic;
 mod camera;
+mod aabb;
 
 fn main() {
     use glium::glutin;

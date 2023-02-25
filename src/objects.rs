@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::aabb::AABB;
 use crate::vec3::Vec3;
 use crate::solve_quadratic;
 
@@ -115,5 +116,11 @@ impl Sphere {
             },
             _ => None,
         }
+    }
+    pub fn bounding_box(self) -> Option<AABB> {
+        Some(AABB {
+            min: self.pos - Vec3 { x: self.radius, y: self.radius, z: self.radius },
+            max: self.pos + Vec3 { x: self.radius, y: self.radius, z: self.radius }
+        })
     }
 }
